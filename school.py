@@ -4,24 +4,36 @@ class School:
         self.address = address
         #composition
         self.classrooms = {}
-    
+        self.teachers = {}
+
     def add_classroom(self, classroom):
-        self.classrooms[classroom.name] = classroom
+        self.classrooms[classroom] = classroom
     
-    def student_addmission(self, student, class_name):
-        if class_name in self.classrooms:
-            self.classrooms[class_name].add_student(student)
+    def add_teachers(self, subject, teacher):
+        self.teachers[subject] = teacher
+    
+    def student_addmission(self, student):
+        classname = student.classroom.name
+        if classname in self.classrooms:
+            self.classrooms[ classname].add_student(student)
         else:
-            print(f'{class_name} is not exist in this school')
+            print(f'{classname} is not exist in this school')
+    
+    def __repr__(self) -> str:
+        for key, val in self.classrooms.items():
+            print(key, val)
+        return ''
 
 class ClassRoom:
     def __init__(self, name) -> None:
         self.name = name
         #composition
         self.students = []
+        self.subjects = []
 
     def add_student(self, student):
         student_id = f'{self.name}-{len(self.students)+1}'
+        student.id = student_id
         self.students.append(student)
     
     def __str__(self) -> str:
