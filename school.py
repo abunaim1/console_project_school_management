@@ -7,7 +7,7 @@ class School:
         self.teachers = {}
 
     def add_classroom(self, classroom):
-        self.classrooms[classroom] = classroom
+        self.classrooms[classroom.name] = classroom
     
     def add_teachers(self, subject, teacher):
         self.teachers[subject] = teacher
@@ -15,13 +15,72 @@ class School:
     def student_addmission(self, student):
         classname = student.classroom.name
         if classname in self.classrooms:
-            self.classrooms[ classname].add_student(student)
+            self.classrooms[classname].add_student(student)
         else:
             print(f'{classname} is not exist in this school')
     
+    @staticmethod
+    def calculate_grade(marks):
+        if marks >= 80 and marks<=100:
+            return 'A+'
+        elif marks < 80 and marks >= 70:
+            return 'A-'
+        elif marks >= 60 and marks < 70:
+            return 'B'
+        elif marks >= 50 and marks < 60:
+            return 'C'
+        elif marks >= 33 and marks < 50:
+            return 'D'
+        else:
+            return 'F'
+
+    @staticmethod
+    def grade_to_value(grade):
+        grade_map = {
+            'A+':5.00,
+            'A' :4.00,
+            'A-':3.50,
+            'B' :3.00,
+            'C' :2.00,
+            'D' :1.00,
+            'F' :0.00
+        }
+        return grade_map[grade]
+    
+    @staticmethod
+    def value_to_grade(value):
+        if 4.5 <= value <= 5.00:
+            return 'A+'
+        elif 3.5 <= value < 4.5:
+            return 'A-'
+        elif 2.50 <= value <3.5:
+            return 'B'
+        elif 2.0 <= value <2.5:
+            return 'C'
+        elif 1.0 <= value <2.0:
+            return 'D'
+        else:
+            return 'F'
+
     def __repr__(self) -> str:
+        print('---------ALL CLASSES---------')
         for key, val in self.classrooms.items():
-            print(key, val)
+            print(key)
+        print()
+        print('---------ALL STUDENTS---------')
+        eight = self.classrooms['eight']
+        for student in eight.students:
+            print(student.name)
+        print()
+        print('-----------Subjects-----------')
+        for subject in eight.subjects:
+            print(subject.name, ':', subject.teacher.name)
+        print()
+        print('------STUDENTS EXAM MARKS------')
+        for student in eight.students:
+            for subject_name, mark in student.marks.items():
+                print(student.name,':', subject_name, mark, student.subject_grade[subject_name])
+            print('--------****-------')
         return ''
 
 class ClassRoom:
@@ -36,9 +95,34 @@ class ClassRoom:
         student.id = student_id
         self.students.append(student)
     
+    def add_subject(self, subject):
+        self.subjects.append(subject)
+    
+    def take_semester_final(self):
+        #take exam
+        for subject in self.subjects:
+            subject.exam(self.students)
+
+        #calculate final grade
+        for student in self.students:
+            student.calculate_final_grade()
+
     def __str__(self) -> str:
         return f'{self.name}-{len(self.students)}'
     
     #top student according to their grade
     def top_student(self):
         pass
+
+class Subject:
+    def __init__(self, name, teacher) -> None:
+        self.teacher = teacher
+        self.name = name
+        self.max_marks = 100
+        self.pass_marks = 33
+    
+    def exam(self, students):
+        for student in students:    
+            mark = self.teacher.evaluate_exam()
+            student.marks[self.name] = mark
+            student.subject_grade[self.name] = School.calculate_grade(mark)

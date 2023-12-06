@@ -1,26 +1,40 @@
 import random
+from school import*
 class Person:
     def __init__(self, name) -> None:
         self.name = name
 
 class Teacher(Person):
-    def __init__(self, name, subject) -> None:
+    def __init__(self, name ) -> None:
         super().__init__(name)
-        self.subject = subject
     
-    def take_exam(self, subject, students):
-        for student in students:
-            mark = random.randint(0,100)
+    def __repr__(self) -> str:
+        return f'{self.name}'
+            
+    def evaluate_exam(self):
+        mark = random.randint(0,100)
+        return mark
 
 class Student(Person):
     def __init__(self, name, classroom) -> None:
         super().__init__(name)
         self.classroom = classroom
         self.__id = None
-
-        self.mark = {}
+        self.marks = {}
+        self.subject_grade = {}
         self.grade = None
     
+    def calculate_final_grade(self):
+        sum = 0
+        for grade in self.subject_grade.values():
+            point = School.grade_to_value(grade)
+            sum += point
+        
+            print(self.name, grade, point)
+        points_avg = sum / len(self.subject_grade)
+        self.grade = School.value_to_grade(points_avg)
+        print(f'{self.name} final grade: {self.grade} with points avf {points_avg}')
+
     @property
     def id(self):
         return self.__id
